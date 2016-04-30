@@ -32,9 +32,9 @@ class BrickSprite: SKSpriteNode {
         let contactY = contactPos.y
         
         if (contactY > topY - 2.0) || (contactY < bottomY + 2.0) {
-            return 0;   //碰撞到brick的上下边
+            return 0;   //碰撞到brick的上下两边
         }else{
-            return 1;   //碰撞到brick的左右边
+            return 1;   //碰撞到brick的左右两边
         }
     }
 }
