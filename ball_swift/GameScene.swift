@@ -10,10 +10,10 @@ import SpriteKit
 
 struct PhysicsCategory {
     static let Ball: UInt32 = 0b0
-    static let TopEdge: UInt32 = 0b1
-    static let LeftEdge: UInt32 = 0b10
-    static let RightEdge: UInt32 = 0b100
-    static let BottomEdge: UInt32 = 0b1000
+    static let TopBorder: UInt32 = 0b1
+    static let LeftBorder: UInt32 = 0b10
+    static let RightBorder: UInt32 = 0b100
+    static let BottomBorder: UInt32 = 0b1000
     static let Brick: UInt32 = 0b10000
 }
 
@@ -47,12 +47,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //创建待摧毁的方块
         let brickSize = CGSize(width: 100.0, height: 30.0)
-        let brickSprite = BrickSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
-        brickSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame) * 1.5)
-        self.addChild(brickSprite)
+        let rowsOfBrick = Int(CGRectGetMidY(self.frame) / brickSize.height)
+        let colsOfBrick = Int(self.frame.width / brickSize.width)
+        print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns")
+        for row in 0 ... rowsOfBrick {
+            for col in 0 ... colsOfBrick {
+                let brickSprite = BrickSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
+                brickSprite.position = CGPoint(x: brickSize.width / 2 + CGFloat(col) * brickSize.width, y: CGRectGetMidY(self.frame) + CGFloat(row) * brickSize.height)
+                self.addChild(brickSprite)
+            }
+        }
 
         print("ball size rect size is (\(ballSprite.size.width), \(ballSprite.size.height))")
-        ballSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame))
+        ballSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame) - 100)
         self.addChild(ballSprite)
         
     }
@@ -65,20 +72,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("second contact body cata \(secondBody.categoryBitMask), collision pos is \(contact.contactPoint))")
         //==>由于spritekit的bug, 反弹可能因为作用力太小而导致某个方向的速度为0(弹不起来),因此每次碰撞的时候设置球的速度
         switch secondBody.categoryBitMask{
-        case PhysicsCategory.TopEdge, PhysicsCategory.BottomEdge:
+        case PhysicsCategory.TopBorder, PhysicsCategory.BottomBorder:
             ballVelY = -ballVelY
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
-        case PhysicsCategory.LeftEdge, PhysicsCategory.RightEdge:
+        case PhysicsCategory.LeftBorder, PhysicsCategory.RightBorder:
             ballVelX = -ballVelX
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.Brick:
             //==>从场景中移除节点
             if let brickSprite = secondBody.node as? BrickSprite {
-                if (brickSprite.checkContactPos(contact.contactPoint) == 0) {
-                    ballVelY = -ballVelY
-                    ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
-                }else{
+                switch brickSprite.checkContactPos(contact.contactPoint) {
+                case sideOfBrick.Left, sideOfBrick.Right:
                     ballVelX = -ballVelX
+                    ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
+                case sideOfBrick.Top, sideOfBrick.Bottom:
+                    ballVelY = -ballVelY
                     ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
                 }
                 print("remove brick at position (\(brickSprite.position.x), \(brickSprite.position.y))")
@@ -92,7 +100,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
         //ballSprite.physicsBody?.velocity = CGVectorMake(75, 5)
-        ballSprite.physicsBody?.applyImpulse(CGVectorMake(11, 3))
+        ballSprite.physicsBody?.applyImpulse(CGVectorMake(-11, 3))
         ballVelX = (ballSprite.physicsBody?.velocity.dx)!
         ballVelY = (ballSprite.physicsBody?.velocity.dy)!
     }

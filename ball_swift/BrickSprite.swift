@@ -8,6 +8,13 @@
 
 import SpriteKit
 
+enum sideOfBrick {
+    case Top
+    case Bottom
+    case Left
+    case Right
+}
+
 class BrickSprite: SKSpriteNode {
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)
@@ -23,18 +30,22 @@ class BrickSprite: SKSpriteNode {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func checkContactPos(contactPos: CGPoint) -> Int {
-        //let leftX = self.position.x - self.size.width / 2
-        //let rightY = self.position.x + self.size.width / 2
-        //let contactX = contactPos.x
+    func checkContactPos(contactPos: CGPoint) -> sideOfBrick {
+        let leftX = self.position.x - self.size.width / 2
+        _ = self.position.x + self.size.width / 2
+        let contactX = contactPos.x
         let bottomY = self.position.y - self.size.height / 2
         let topY = self.position.y + self.size.height / 2
         let contactY = contactPos.y
         
-        if (contactY > topY - 2.0) || (contactY < bottomY + 2.0) {
-            return 0;   //碰撞到brick的上下两边
-        }else{
-            return 1;   //碰撞到brick的左右两边
+        if (contactY > topY - 1.0) {
+            return sideOfBrick.Top   //碰撞到brick的上下两边
+        }else if (contactY < bottomY + 1.0) {
+            return sideOfBrick.Bottom
+        }else if (contactX < leftX + 1.0) {
+            return sideOfBrick.Left   //碰撞到brick的左右两边
+        }else {
+            return sideOfBrick.Right
         }
     }
 }
