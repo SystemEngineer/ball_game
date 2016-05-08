@@ -42,18 +42,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("frame rect size is \(self.frame.size.width), \(self.frame.size.height), origin pos is \(self.frame.origin.x), \(self.frame.origin.y)")
         
         // 创建四条边界
-        self.sceneBorderHelper.createBorder(self.frame)
+        let borderWidth = CGFloat(60.0)
+        self.sceneBorderHelper.createBorder(self.frame, borderWidth: borderWidth)
         self.sceneBorderHelper.addBorderToScene(self)
         
         //创建待摧毁的方块
-        let brickSize = CGSize(width: 100.0, height: 30.0)
-        let rowsOfBrick = Int(CGRectGetMidY(self.frame) / brickSize.height)
-        let colsOfBrick = Int(self.frame.width / brickSize.width)
+        let brickSize = CGSize(width:(self.frame.width - 2 * borderWidth) / 5, height: 20.0)
+        let rowsOfBrick = Int(CGRectGetMidY(self.frame) / brickSize.height) - 1
+        let colsOfBrick = Int((self.frame.width - 2 * borderWidth) / brickSize.width) - 1
         print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns")
         for row in 0 ... rowsOfBrick {
             for col in 0 ... colsOfBrick {
                 let brickSprite = BrickSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
-                brickSprite.position = CGPoint(x: brickSize.width / 2 + CGFloat(col) * brickSize.width, y: CGRectGetMidY(self.frame) + CGFloat(row) * brickSize.height)
+                brickSprite.position = CGPoint(x: borderWidth + brickSize.width / 2 + CGFloat(col) * brickSize.width, y: CGRectGetMidY(self.frame) + CGFloat(row) * brickSize.height)
                 self.addChild(brickSprite)
             }
         }
@@ -79,14 +80,29 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballVelX = -ballVelX
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.Brick:
-            //==>从场景中移除节点
+            //==>判断撞击在brick的哪一测,并从场景中移除该brick节点
             if let brickSprite = secondBody.node as? BrickSprite {
                 switch brickSprite.checkContactPos(contact.contactPoint) {
-                case sideOfBrick.Left, sideOfBrick.Right:
-                    ballVelX = -ballVelX
+                //==>加入对速度方向的判断,避免同时碰到两个brick交接点时, 速度变化两次
+                case sideOfBrick.Left:
+                    if ballVelX > 0 {
+                        ballVelX = -ballVelX
+                    }
                     ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
-                case sideOfBrick.Top, sideOfBrick.Bottom:
-                    ballVelY = -ballVelY
+                case sideOfBrick.Right:
+                    if ballVelX < 0 {
+                        ballVelX = -ballVelX
+                    }
+                    ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
+                case sideOfBrick.Top:
+                    if ballVelY < 0 {
+                        ballVelY = -ballVelY
+                    }
+                    ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
+                case sideOfBrick.Bottom:
+                    if ballVelY > 0 {
+                        ballVelY = -ballVelY
+                    }
                     ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
                 }
                 print("remove brick at position (\(brickSprite.position.x), \(brickSprite.position.y))")
@@ -99,10 +115,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
         /* Called when a touch begins */
-        //ballSprite.physicsBody?.velocity = CGVectorMake(75, 5)
-        ballSprite.physicsBody?.applyImpulse(CGVectorMake(-11, 3))
-        ballVelX = (ballSprite.physicsBody?.velocity.dx)!
-        ballVelY = (ballSprite.physicsBody?.velocity.dy)!
+        //ballSprite.physicsBody?.velocity = CGVectorMake(280, 66)
+        if (ballVelX == 0) && (ballVelY == 0) {
+            ballSprite.physicsBody?.applyImpulse(CGVectorMake(-11, 3))
+            ballVelX = (ballSprite.physicsBody?.velocity.dx)!
+            ballVelY = (ballSprite.physicsBody?.velocity.dy)!
+        }else{
+            ballVelY = CGFloat(0.0)
+            ballVelX = CGFloat(0.0)
+        }
+        
     }
    
     override func update(currentTime: CFTimeInterval) {

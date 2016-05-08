@@ -15,7 +15,7 @@ class BorderHelper {
     var leftBorder: SKSpriteNode?
     var rightBorder: SKSpriteNode?
     
-    internal func createBorder(sceneFrameRect: CGRect) {
+    internal func createBorder(sceneFrameRect: CGRect, borderWidth: CGFloat) {
         bottomBorder = SKNode()
         let bottomBorderRect = CGRectMake(sceneFrameRect.origin.x, sceneFrameRect.origin.y, sceneFrameRect.width, 1)
         bottomBorder!.physicsBody = SKPhysicsBody(edgeLoopFromRect: bottomBorderRect)
@@ -26,7 +26,7 @@ class BorderHelper {
         topBorder!.physicsBody = SKPhysicsBody(edgeLoopFromRect: topBorderRect)
         topBorder!.physicsBody?.categoryBitMask = PhysicsCategory.TopBorder
         
-        let sizeOfLeftRightBorder = CGSize(width: 60, height: sceneFrameRect.height)
+        let sizeOfLeftRightBorder = CGSize(width: borderWidth, height: sceneFrameRect.height)
         let posOfLeftBorder = CGPoint(x: CGRectGetMinX(sceneFrameRect) + sizeOfLeftRightBorder.width / 2, y: CGRectGetMidY(sceneFrameRect))
         let posOfRightBorder = CGPoint(x: CGRectGetMaxX(sceneFrameRect) - sizeOfLeftRightBorder.width / 2, y: CGRectGetMidY(sceneFrameRect))
         
