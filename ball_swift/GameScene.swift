@@ -26,14 +26,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
-        /*
-        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
-        myLabel.text = "Hello, World!"
-        myLabel.fontSize = 45
-        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
-        
-        self.addChild(myLabel)
-        */
         //self.scaleMode = SKSceneScaleMode.AspectFill
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
         self.physicsWorld.contactDelegate = self
@@ -42,7 +34,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("frame rect size is \(self.frame.size.width), \(self.frame.size.height), origin pos is \(self.frame.origin.x), \(self.frame.origin.y)")
         
         // 创建四条边界
-        let borderWidth = CGFloat(60.0)
+        let borderWidth = CGFloat(1.0)
         self.sceneBorderHelper.createBorder(self.frame, borderWidth: borderWidth)
         self.sceneBorderHelper.addBorderToScene(self)
         
@@ -53,7 +45,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns")
         for row in 0 ... rowsOfBrick {
             for col in 0 ... colsOfBrick {
-                let brickSprite = BrickSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
+                let brickSprite = BrickSprite(texture: SKTexture(imageNamed: "Brick"), color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
                 brickSprite.position = CGPoint(x: borderWidth + brickSize.width / 2 + CGFloat(col) * brickSize.width, y: CGRectGetMidY(self.frame) + CGFloat(row) * brickSize.height)
                 self.addChild(brickSprite)
             }

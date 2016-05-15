@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ball_swift/GameScene.swift"
-            timestampString = "484364476.519548"
+            timestampString = "485003991.217661"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "84"
-            endingLineNumber = "84"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
             landmarkName = "didBeginContact(_:)"
             landmarkType = "5">
          </BreakpointContent>
