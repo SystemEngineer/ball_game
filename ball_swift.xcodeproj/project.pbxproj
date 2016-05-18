@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		812D99621CD104DB00E653D1 /* BrickSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812D99611CD104DB00E653D1 /* BrickSprite.swift */; };
+		81A515EB1CECA16C008957F2 /* GameLevels.plist in Resources */ = {isa = PBXBuildFile; fileRef = 81A515EA1CECA16C008957F2 /* GameLevels.plist */; };
 		81B031E81CC3870700EAC788 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B031E71CC3870700EAC788 /* AppDelegate.swift */; };
 		81B031EA1CC3870700EAC788 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 81B031E91CC3870700EAC788 /* GameScene.sks */; };
 		81B031EC1CC3870700EAC788 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B031EB1CC3870700EAC788 /* GameScene.swift */; };
@@ -40,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		812D99611CD104DB00E653D1 /* BrickSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrickSprite.swift; sourceTree = "<group>"; };
+		81A515EA1CECA16C008957F2 /* GameLevels.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = GameLevels.plist; sourceTree = "<group>"; };
 		81B031E41CC3870700EAC788 /* ball_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ball_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		81B031E71CC3870700EAC788 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		81B031E91CC3870700EAC788 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				81B031F21CC3870700EAC788 /* Assets.xcassets */,
 				81B031F41CC3870700EAC788 /* LaunchScreen.storyboard */,
 				81B031F71CC3870700EAC788 /* Info.plist */,
+				81A515EA1CECA16C008957F2 /* GameLevels.plist */,
 			);
 			path = ball_swift;
 			sourceTree = "<group>";
@@ -250,6 +253,7 @@
 				81B031EA1CC3870700EAC788 /* GameScene.sks in Resources */,
 				81B031F61CC3870700EAC788 /* LaunchScreen.storyboard in Resources */,
 				81B031F31CC3870700EAC788 /* Assets.xcassets in Resources */,
+				81A515EB1CECA16C008957F2 /* GameLevels.plist in Resources */,
 				81B031F11CC3870700EAC788 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -19,7 +19,7 @@ struct PhysicsCategory {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    let ballSprite = BallSprite(color: UIColor(red: 0.25, green: 0.25, blue: 0.25, alpha: 1.0), size: CGSize(width: 10.0, height: 10.0))
+    let ballSprite = BallSprite(imageNamed: "Ball")
     var ballVelX = CGFloat(0.0)
     var ballVelY = CGFloat(0.0)
     var sceneBorderHelper = BorderHelper()
@@ -39,14 +39,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.sceneBorderHelper.addBorderToScene(self)
         
         //创建待摧毁的方块
-        let brickSize = CGSize(width:(self.frame.width - 2 * borderWidth) / 5, height: 20.0)
-        let rowsOfBrick = Int(CGRectGetMidY(self.frame) / brickSize.height) - 1
+        let bricksPerRow = CGFloat(5)
+        let brickSize = CGSize(width:(self.frame.width - 2 * borderWidth) / bricksPerRow, height: 20.0)
+        let rowsOfBrick = Int(CGRectGetMidY(self.frame) / (2 * brickSize.height)) - 1
         let colsOfBrick = Int((self.frame.width - 2 * borderWidth) / brickSize.width) - 1
         print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns")
         for row in 0 ... rowsOfBrick {
             for col in 0 ... colsOfBrick {
                 let brickSprite = BrickSprite(texture: SKTexture(imageNamed: "Brick"), color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
-                brickSprite.position = CGPoint(x: borderWidth + brickSize.width / 2 + CGFloat(col) * brickSize.width, y: CGRectGetMidY(self.frame) + CGFloat(row) * brickSize.height)
+                brickSprite.position = CGPoint(x: borderWidth + brickSize.width / 2 + CGFloat(col) * brickSize.width, y: self.frame.height - (1.0 + CGFloat(row)) * brickSize.height)
                 self.addChild(brickSprite)
             }
         }
@@ -55,6 +56,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         ballSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame) - 100)
         self.addChild(ballSprite)
         
+        self.createLayoutByGameLevelsCfg()
     }
     
     func didBeginContact(contact:SKPhysicsContact){
@@ -62,7 +64,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         if(contact.bodyA.categoryBitMask > contact.bodyB.categoryBitMask){
             secondBody = contact.bodyA
         }
-        print("second contact body cata \(secondBody.categoryBitMask), collision pos is \(contact.contactPoint))")
+        //print("second contact body cata \(secondBody.categoryBitMask), collision pos is \(contact.contactPoint))")
         //==>由于spritekit的bug, 反弹可能因为作用力太小而导致某个方向的速度为0(弹不起来),因此每次碰撞的时候设置球的速度
         switch secondBody.categoryBitMask{
         case PhysicsCategory.TopBorder, PhysicsCategory.BottomBorder:
@@ -75,7 +77,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //==>判断撞击在brick的哪一测,并从场景中移除该brick节点
             if let brickSprite = secondBody.node as? BrickSprite {
                 switch brickSprite.checkContactPos(contact.contactPoint) {
-                //==>加入对速度方向的判断,避免同时碰到两个brick交接点时, 速度变化两次
+                //==>加入对速度方向的判断,避免碰到两个brick交接点时, 速度变化两次
                 case sideOfBrick.Left:
                     if ballVelX > 0 {
                         ballVelX = -ballVelX
@@ -97,7 +99,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                     }
                     ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
                 }
-                print("remove brick at position (\(brickSprite.position.x), \(brickSprite.position.y))")
+                //print("remove brick at position (\(brickSprite.position.x), \(brickSprite.position.y))")
                 brickSprite.removeFromParent()
             }
         default:
@@ -109,7 +111,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         /* Called when a touch begins */
         //ballSprite.physicsBody?.velocity = CGVectorMake(280, 66)
         if (ballVelX == 0) && (ballVelY == 0) {
-            ballSprite.physicsBody?.applyImpulse(CGVectorMake(-11, 3))
+            ballSprite.physicsBody?.applyImpulse(CGVectorMake(-11, 11))
             ballVelX = (ballSprite.physicsBody?.velocity.dx)!
             ballVelY = (ballSprite.physicsBody?.velocity.dy)!
         }else{
@@ -121,5 +123,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+    }
+    
+    func createLayoutByGameLevelsCfg() {
+        //==>读取plist配置文件的方法
+        let levels:String = NSBundle.mainBundle().pathForResource("GameLevels", ofType: "plist")!
+        let levelsData:NSMutableDictionary = NSMutableDictionary(contentsOfFile: levels)!
+        let level1 = levelsData.objectForKey("Level1") as! NSArray
+        let level1BricksLayout0 = level1[0] as! NSArray
+        let row0 = level1BricksLayout0[0] as! String
+        print(row0)
     }
 }
