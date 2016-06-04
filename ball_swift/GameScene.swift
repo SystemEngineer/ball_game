@@ -15,6 +15,7 @@ struct PhysicsCategory {
     static let RightBorder: UInt32 = 0b100
     static let BottomBorder: UInt32 = 0b1000
     static let Brick: UInt32 = 0b10000
+    static let Bouncer: UInt32 = 0b100000
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
@@ -38,7 +39,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.sceneBorderHelper.createBorder(self.frame, borderWidth: borderWidth)
         self.sceneBorderHelper.addBorderToScene(self)
         
-        //创建待摧毁的方块
+        // 创建待摧毁的方块
         let bricksPerRow = CGFloat(5)
         let brickSize = CGSize(width:(self.frame.width - 2 * borderWidth) / bricksPerRow, height: 20.0)
         let rowsOfBrick = Int(CGRectGetMidY(self.frame) / (2 * brickSize.height)) - 1
@@ -51,11 +52,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.addChild(brickSprite)
             }
         }
-
+        
+        // 创建挡板
+        let bouncerSprite = BouncerSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0),
+                                          size: CGSize(width:100, height: 5.0))
+        bouncerSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMinY(self.frame) + 10)
+        self.addChild(bouncerSprite)
+        
+        // 放置球体
         print("ball size rect size is (\(ballSprite.size.width), \(ballSprite.size.height))")
         ballSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame) - 100)
         self.addChild(ballSprite)
         
+        //
         self.createLayoutByGameLevelsCfg()
     }
     
@@ -72,6 +81,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.LeftBorder, PhysicsCategory.RightBorder:
             ballVelX = -ballVelX
+            ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
+        case PhysicsCategory.Bouncer:
+            ballVelY = -ballVelY
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.Brick:
             //==>判断撞击在brick的哪一测,并从场景中移除该brick节点
@@ -111,7 +123,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         /* Called when a touch begins */
         //ballSprite.physicsBody?.velocity = CGVectorMake(280, 66)
         if (ballVelX == 0) && (ballVelY == 0) {
-            ballSprite.physicsBody?.applyImpulse(CGVectorMake(-11, 11))
+            ballSprite.physicsBody?.applyImpulse(CGVectorMake(-6, 6))
             ballVelX = (ballSprite.physicsBody?.velocity.dx)!
             ballVelY = (ballSprite.physicsBody?.velocity.dy)!
         }else{

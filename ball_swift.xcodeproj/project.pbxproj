@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8103E8F01D02FFD9002B8346 /* BouncerSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8103E8EF1D02FFD9002B8346 /* BouncerSprite.swift */; };
 		812D99621CD104DB00E653D1 /* BrickSprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812D99611CD104DB00E653D1 /* BrickSprite.swift */; };
 		81A515EB1CECA16C008957F2 /* GameLevels.plist in Resources */ = {isa = PBXBuildFile; fileRef = 81A515EA1CECA16C008957F2 /* GameLevels.plist */; };
 		81B031E81CC3870700EAC788 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81B031E71CC3870700EAC788 /* AppDelegate.swift */; };
@@ -40,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		8103E8EF1D02FFD9002B8346 /* BouncerSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BouncerSprite.swift; sourceTree = "<group>"; };
 		812D99611CD104DB00E653D1 /* BrickSprite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BrickSprite.swift; sourceTree = "<group>"; };
 		81A515EA1CECA16C008957F2 /* GameLevels.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = GameLevels.plist; sourceTree = "<group>"; };
 		81B031E41CC3870700EAC788 /* ball_swift.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ball_swift.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,6 +123,7 @@
 				81B031F41CC3870700EAC788 /* LaunchScreen.storyboard */,
 				81B031F71CC3870700EAC788 /* Info.plist */,
 				81A515EA1CECA16C008957F2 /* GameLevels.plist */,
+				8103E8EF1D02FFD9002B8346 /* BouncerSprite.swift */,
 			);
 			path = ball_swift;
 			sourceTree = "<group>";
@@ -280,6 +283,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81B031EC1CC3870700EAC788 /* GameScene.swift in Sources */,
+				8103E8F01D02FFD9002B8346 /* BouncerSprite.swift in Sources */,
 				81DE35921CD3A606002FC9BA /* BallSprite.swift in Sources */,
 				81DE35901CD390A8002FC9BA /* BorderHelper.swift in Sources */,
 				81B031EE1CC3870700EAC788 /* GameViewController.swift in Sources */,

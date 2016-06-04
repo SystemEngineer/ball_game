@@ -24,7 +24,8 @@ class BallSprite: SKSpriteNode {
         //==>场景初始化代码里施加力是不起作用的, 所以加到了touchesBegan里
         //ballSprite.physicsBody?.applyForce(CGVectorMake(-75, 75))
         self.physicsBody?.categoryBitMask = PhysicsCategory.Ball
-        self.physicsBody?.contactTestBitMask = PhysicsCategory.BottomBorder | PhysicsCategory.TopBorder | PhysicsCategory.LeftBorder | PhysicsCategory.RightBorder | PhysicsCategory.Brick
+        //==>添加撞击检测, 必须添加以后才会触发碰撞事件!
+        self.physicsBody?.contactTestBitMask = PhysicsCategory.BottomBorder | PhysicsCategory.TopBorder | PhysicsCategory.LeftBorder | PhysicsCategory.RightBorder | PhysicsCategory.Brick | PhysicsCategory.Bouncer
 
     }
 

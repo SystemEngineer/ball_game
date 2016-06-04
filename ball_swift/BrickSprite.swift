@@ -39,16 +39,16 @@ class BrickSprite: SKSpriteNode {
         let contactY = contactPos.y
         
         if (contactY > topY - 1.0) {
-            print("touch the top")
+            //print("touch the top")
             return sideOfBrick.Top   //碰撞到brick的上下两边
         }else if (contactY < bottomY + 1.0) {
-            print("touch the bottom")
+            //print("touch the bottom")
             return sideOfBrick.Bottom
         }else if (contactX < leftX + 1.0) {
-            print("touch the left")
+            //print("touch the left")
             return sideOfBrick.Left   //碰撞到brick的左右两边
         }else {
-            print("touch the right")
+            //print("touch the right")
             return sideOfBrick.Right
         }
     }
