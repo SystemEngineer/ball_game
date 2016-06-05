@@ -21,6 +21,8 @@ struct PhysicsCategory {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     let ballSprite = BallSprite(imageNamed: "Ball")
+    let bouncerSprite = BouncerSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0),
+                                      size: CGSize(width:100, height: 5.0))
     var ballVelX = CGFloat(0.0)
     var ballVelY = CGFloat(0.0)
     var sceneBorderHelper = BorderHelper()
@@ -54,14 +56,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         }
         
         // 创建挡板
-        let bouncerSprite = BouncerSprite(color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0),
-                                          size: CGSize(width:100, height: 5.0))
-        bouncerSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMinY(self.frame) + 10)
+        bouncerSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMinY(self.frame) + 50)
         self.addChild(bouncerSprite)
         
-        // 放置球体
+        // 放置球体, 将球体放在挡板上
         print("ball size rect size is (\(ballSprite.size.width), \(ballSprite.size.height))")
-        ballSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMidY(self.frame) - 100)
+        ballSprite.position = CGPoint(x: bouncerSprite.position.x, y: bouncerSprite.position.y + ballSprite.size.height)
         self.addChild(ballSprite)
         
         //
@@ -76,13 +76,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         //print("second contact body cata \(secondBody.categoryBitMask), collision pos is \(contact.contactPoint))")
         //==>由于spritekit的bug, 反弹可能因为作用力太小而导致某个方向的速度为0(弹不起来),因此每次碰撞的时候设置球的速度
         switch secondBody.categoryBitMask{
-        case PhysicsCategory.TopBorder, PhysicsCategory.BottomBorder:
+        case PhysicsCategory.TopBorder:
             ballVelY = -ballVelY
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
+        case PhysicsCategory.BottomBorder:
+            print("Game Over")
+            ballSprite.removeFromParent()
         case PhysicsCategory.LeftBorder, PhysicsCategory.RightBorder:
             ballVelX = -ballVelX
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.Bouncer:
+            //FIX ME: 碰撞到左右边缘会吸附到上面, 而不会弹开
             ballVelY = -ballVelY
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.Brick:
@@ -126,11 +130,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballSprite.physicsBody?.applyImpulse(CGVectorMake(-6, 6))
             ballVelX = (ballSprite.physicsBody?.velocity.dx)!
             ballVelY = (ballSprite.physicsBody?.velocity.dy)!
-        }else{
-            ballVelY = CGFloat(0.0)
-            ballVelX = CGFloat(0.0)
         }
-        
+        let anyTouch : AnyObject! = (touches as NSSet).anyObject()
+        let location = anyTouch.locationInNode(self)
+        let newX = min(max(bouncerSprite.size.width / 2, location.x), self.frame.size.width - bouncerSprite.size.width / 2)
+        bouncerSprite.runAction(SKAction.moveTo(CGPoint(x: newX, y: bouncerSprite.position.y), duration: 0.1))
+    }
+    
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        let anyTouch : AnyObject! = (touches as NSSet).anyObject()
+        let location = anyTouch.locationInNode(self)
+        let newX = min(max(bouncerSprite.size.width / 2, location.x), self.frame.size.width - bouncerSprite.size.width / 2)
+        bouncerSprite.runAction(SKAction.moveTo(CGPoint(x: newX, y: bouncerSprite.position.y), duration: 0.1))
     }
    
     override func update(currentTime: CFTimeInterval) {
