@@ -46,7 +46,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let brickSize = CGSize(width:(self.frame.width - 2 * borderWidth) / bricksPerRow, height: 20.0)
         let rowsOfBrick = Int(CGRectGetMidY(self.frame) / (2 * brickSize.height)) - 1
         let colsOfBrick = Int((self.frame.width - 2 * borderWidth) / brickSize.width) - 1
-        print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns")
+        print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns, brick width is \(brickSize.width)")
         for row in 0 ... rowsOfBrick {
             for col in 0 ... colsOfBrick {
                 let brickSprite = BrickSprite(texture: SKTexture(imageNamed: "Brick"), color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
@@ -80,7 +80,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballVelY = -ballVelY
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.BottomBorder:
-            print("Game Over")
+            self.showGameOverBanner()
             ballSprite.removeFromParent()
         case PhysicsCategory.LeftBorder, PhysicsCategory.RightBorder:
             ballVelX = -ballVelX
@@ -131,6 +131,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballVelX = (ballSprite.physicsBody?.velocity.dx)!
             ballVelY = (ballSprite.physicsBody?.velocity.dy)!
         }
+        //==>anyObject和NSSet的含义?
         let anyTouch : AnyObject! = (touches as NSSet).anyObject()
         let location = anyTouch.locationInNode(self)
         let newX = min(max(bouncerSprite.size.width / 2, location.x), self.frame.size.width - bouncerSprite.size.width / 2)
@@ -146,6 +147,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+    }
+    
+    func showGameOverBanner() {
+        /* Setup your scene here */
+        let myLabel = SKLabelNode(fontNamed:"Chalkduster")
+        myLabel.text = "Game Over!"
+        myLabel.fontSize = 45
+        myLabel.position = CGPoint(x:CGRectGetMidX(self.frame), y:CGRectGetMidY(self.frame))
+        self.addChild(myLabel)
     }
     
     func createLayoutByGameLevelsCfg() {
