@@ -27,6 +27,7 @@ class GameViewController: UIViewController {
             scene.scaleMode = .AspectFill
             //==>这一语句将场景大小设置为屏幕可视区域的大小.否则场景大小为1024*768超过屏幕可视区域大小
             scene.size = skView.bounds.size
+            scene.gameLevel = 1
             
             skView.presentScene(scene)
         }

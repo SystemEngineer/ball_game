@@ -18,6 +18,8 @@ enum sideOfBrick {
 class BrickSprite: SKSpriteNode {
     override init(texture: SKTexture?, color: UIColor, size: CGSize) {
         super.init(texture: texture, color: color, size: size)
+        //==>SKNode可以重名(当做分类用)
+        self.name = "BrickSprite"
         self.physicsBody = SKPhysicsBody(rectangleOfSize: size)
         self.physicsBody?.dynamic = false
         self.physicsBody?.categoryBitMask = PhysicsCategory.Brick

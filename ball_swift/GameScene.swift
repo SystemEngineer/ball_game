@@ -26,9 +26,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     var ballVelX = CGFloat(0.0)
     var ballVelY = CGFloat(0.0)
     var sceneBorderHelper = BorderHelper()
+    var gameLevel = 0
     
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
+        print("game level is \(self.gameLevel)")
         //self.scaleMode = SKSceneScaleMode.AspectFill
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
         self.physicsWorld.contactDelegate = self
@@ -42,9 +44,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.sceneBorderHelper.addBorderToScene(self)
         
         // 创建待摧毁的方块
+        /*
         let bricksPerRow = CGFloat(5)
         let brickSize = CGSize(width:(self.frame.width - 2 * borderWidth) / bricksPerRow, height: 20.0)
-        let rowsOfBrick = Int(CGRectGetMidY(self.frame) / (2 * brickSize.height)) - 1
+        let rowsOfBrick = 0 //Int(CGRectGetMidY(self.frame) / (2 * brickSize.height)) - 1
         let colsOfBrick = Int((self.frame.width - 2 * borderWidth) / brickSize.width) - 1
         print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns, brick width is \(brickSize.width)")
         for row in 0 ... rowsOfBrick {
@@ -54,18 +57,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 self.addChild(brickSprite)
             }
         }
+        */
         
         // 创建挡板
         bouncerSprite.position = CGPoint(x: CGRectGetMidX(self.frame), y: CGRectGetMinY(self.frame) + 50)
         self.addChild(bouncerSprite)
         
         // 放置球体, 将球体放在挡板上
-        print("ball size rect size is (\(ballSprite.size.width), \(ballSprite.size.height))")
         ballSprite.position = CGPoint(x: bouncerSprite.position.x, y: bouncerSprite.position.y + ballSprite.size.height)
         self.addChild(ballSprite)
         
         //
-        self.createLayoutByGameLevelsCfg()
+        self.createLayoutByGameLevelsCfg(self)
     }
     
     func didBeginContact(contact:SKPhysicsContact){
@@ -90,7 +93,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             ballVelY = -ballVelY
             ballSprite.physicsBody?.velocity = CGVectorMake(ballVelX, ballVelY)
         case PhysicsCategory.Brick:
-            //==>判断撞击在brick的哪一测,并从场景中移除该brick节点
+            // 判断撞击在brick的哪一测,并从场景中移除该brick节点
             if let brickSprite = secondBody.node as? BrickSprite {
                 switch brickSprite.checkContactPos(contact.contactPoint) {
                 //==>加入对速度方向的判断,避免碰到两个brick交接点时, 速度变化两次
@@ -117,6 +120,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 }
                 //print("remove brick at position (\(brickSprite.position.x), \(brickSprite.position.y))")
                 brickSprite.removeFromParent()
+                //最后一个brick被移除, 可以进入下一关
+                if self.childNodeWithName("BrickSprite") == nil {
+                    print("Mission acomplished")
+                    let nextScene = GameScene(fileNamed:"GameScene")
+                    /* Set the scale mode to scale to fit the window */
+                    nextScene!.scaleMode = .AspectFill
+                    //==>这一语句将场景大小设置为屏幕可视区域的大小.否则场景大小为1024*768超过屏幕可视区域大小
+                    nextScene!.size = (self.view?.bounds.size)!
+                    nextScene!.gameLevel = self.gameLevel + 1
+                    self.view?.presentScene(nextScene)
+                }
             }
         default:
             print("Error contact with secondBody cate is \(secondBody.categoryBitMask)")
@@ -158,13 +172,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.addChild(myLabel)
     }
     
-    func createLayoutByGameLevelsCfg() {
+    func createLayoutByGameLevelsCfg(scene:SKScene) {
         //==>读取plist配置文件的方法
         let levels:String = NSBundle.mainBundle().pathForResource("GameLevels", ofType: "plist")!
         let levelsData:NSMutableDictionary = NSMutableDictionary(contentsOfFile: levels)!
         let level1 = levelsData.objectForKey("Level1") as! NSArray
         let level1BricksLayout0 = level1[0] as! NSArray
+        let rows = level1BricksLayout0.count
         let row0 = level1BricksLayout0[0] as! String
-        print(row0)
+        print("row[0] is \(row0), total is \(rows)")
+        
+        // 创建待摧毁的方块
+        let row0Array = row0.componentsSeparatedByString(",")
+        // TODO: Refactor!
+        let borderWidth = CGFloat(1.0)
+        let rowsOfBrick = 0 
+        let colsOfBrick = row0Array.count
+        let brickSize = CGSize(width:(scene.frame.width - 2 * borderWidth) / CGFloat(colsOfBrick), height: 20.0)
+        print("There are \(rowsOfBrick) rows & \(colsOfBrick) columns, brick width is \(brickSize.width)")
+        for row in 0 ... rowsOfBrick {
+            for col in 0 ... colsOfBrick {
+                let brickSprite = BrickSprite(texture: SKTexture(imageNamed: "Brick"), color: UIColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0), size: brickSize)
+                brickSprite.position = CGPoint(x: borderWidth + brickSize.width / 2 + CGFloat(col) * brickSize.width, y: self.frame.height - (1.0 + CGFloat(row)) * brickSize.height)
+                self.addChild(brickSprite)
+            }
+        }
     }
 }
